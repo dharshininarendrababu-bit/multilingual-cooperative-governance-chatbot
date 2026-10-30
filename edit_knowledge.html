@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Knowledge - Cooperative Assist</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        /* =====================================================
+           PAGE
+        ===================================================== */
+
+        .edit-page {
+            min-height: 100vh;
+            padding: 45px 20px;
+            background: #f6f8fc;
+        }
+
+
+        /* =====================================================
+           CONTAINER
+        ===================================================== */
+
+        .edit-container {
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .edit-header {
+            margin-bottom: 25px;
+        }
+
+        .back-link {
+            display: inline-block;
+
+            margin-bottom: 15px;
+
+            color: #2563eb;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .edit-header h1 {
+            margin-bottom: 8px;
+
+            color: #172033;
+
+            font-size: 32px;
+
+            line-height: 1.2;
+        }
+
+        .edit-header p {
+            color: #748097;
+
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           CARD
+        ===================================================== */
+
+        .edit-card {
+            padding: 30px;
+
+            background: #ffffff;
+
+            border: 1px solid #e3e8f0;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 18px 45px
+                rgba(34, 50, 79, 0.08);
+        }
+
+
+        /* =====================================================
+           RECORD ID
+        ===================================================== */
+
+        .record-id {
+            display: inline-block;
+
+            margin-bottom: 20px;
+
+            padding: 7px 12px;
+
+            border-radius: 8px;
+
+            background: #eef4ff;
+
+            color: #2563eb;
+
+            font-size: 12px;
+
+            font-weight: 700;
+        }
+
+
+        /* =====================================================
+           INFO BOX
+        ===================================================== */
+
+        .info-box {
+            margin-bottom: 25px;
+
+            padding: 14px 16px;
+
+            border-radius: 10px;
+
+            background: #f4f7fb;
+
+            color: #667287;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+
+        /* =====================================================
+           FORM GROUP
+        ===================================================== */
+
+        .form-group {
+            margin-bottom: 21px;
+        }
+
+        .form-group label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #374255;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+
+        /* =====================================================
+           INPUTS
+        ===================================================== */
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+
+            padding: 13px 14px;
+
+            border: 1px solid #dce2eb;
+
+            border-radius: 10px;
+
+            outline: none;
+
+            background: #ffffff;
+
+            color: #202a3c;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(37, 99, 235, 0.08);
+        }
+
+
+        /* =====================================================
+           TEXTAREA
+        ===================================================== */
+
+        .form-group textarea {
+            min-height: 160px;
+
+            resize: vertical;
+
+            line-height: 1.6;
+        }
+
+
+        /* =====================================================
+           FORM ROW
+        ===================================================== */
+
+        .form-row {
+            display: grid;
+
+            grid-template-columns:
+                1fr
+                1fr;
+
+            gap: 18px;
+        }
+
+
+        /* =====================================================
+           BUTTON ROW
+        ===================================================== */
+
+        .button-row {
+            display: flex;
+
+            gap: 12px;
+
+            margin-top: 28px;
+        }
+
+
+        /* =====================================================
+           SAVE BUTTON
+        ===================================================== */
+
+        .save-btn {
+            border: none;
+
+            padding: 13px 23px;
+
+            border-radius: 10px;
+
+            background: #2563eb;
+
+            color: #ffffff;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 10px 25px
+                rgba(37, 99, 235, 0.18);
+        }
+
+
+        /* =====================================================
+           CANCEL BUTTON
+        ===================================================== */
+
+        .cancel-btn {
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 13px 23px;
+
+            border: 1px solid #dce2eb;
+
+            border-radius: 10px;
+
+            background: #ffffff;
+
+            color: #374255;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            text-decoration: none;
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .cancel-btn:hover {
+            background: #f7f9fc;
+
+            transform: translateY(-1px);
+        }
+
+
+        /* =====================================================
+           REQUIRED STAR
+        ===================================================== */
+
+        .required {
+            color: #e04b4b;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .edit-page {
+                padding: 30px 15px;
+            }
+
+            .edit-card {
+                padding: 20px;
+            }
+
+            .edit-header h1 {
+                font-size: 28px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .save-btn,
+            .cancel-btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <main class="edit-page">
+
+        <div class="edit-container">
+
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <div class="edit-header">
+
+                <a href="{{ url_for('admin_knowledge') }}"
+                   class="back-link">
+
+                    ← Back to Knowledge Base
+
+                </a>
+
+                <h1>
+                    Edit Knowledge
+                </h1>
+
+                <p>
+                    Update the knowledge-base question,
+                    answer, language, or category.
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 EDIT CARD
+            ================================================== -->
+
+            <div class="edit-card">
+
+
+                <!-- RECORD ID -->
+
+                <div class="record-id">
+
+                    Knowledge ID:
+                    {{ item.id }}
+
+                </div>
+
+
+                <!-- INFORMATION -->
+
+                <div class="info-box">
+
+                    Update the information carefully before
+                    saving. The edited answer will be used by
+                    the chatbot knowledge base.
+
+                </div>
+
+
+                <!-- =================================================
+                     EDIT FORM
+                ================================================== -->
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'admin_edit_knowledge',
+                        item_id=item.id
+                    ) }}">
+
+
+                    <!-- QUESTION -->
+
+                    <div class="form-group">
+
+                        <label for="question">
+
+                            Question
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="question"
+                            name="question"
+                            value="{{ item.question }}"
+                            placeholder="Enter the question"
+                            required>
+
+                    </div>
+
+
+                    <!-- ANSWER -->
+
+                    <div class="form-group">
+
+                        <label for="answer">
+
+                            Answer
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <textarea
+                            id="answer"
+                            name="answer"
+                            placeholder="Enter the answer"
+                            required>{{ item.answer }}</textarea>
+
+                    </div>
+
+
+                    <!-- LANGUAGE + CATEGORY -->
+
+                    <div class="form-row">
+
+
+                        <!-- LANGUAGE -->
+
+                        <div class="form-group">
+
+                            <label for="language">
+
+                                Language
+                                <span class="required">*</span>
+
+                            </label>
+
+                            <select
+                                id="language"
+                                name="language"
+                                required>
+
+                                <option
+                                    value="English"
+                                    {% if item.language == "English" %}
+                                    selected
+                                    {% endif %}>
+
+                                    English
+
+                                </option>
+
+                                <option
+                                    value="Tamil"
+                                    {% if item.language == "Tamil" %}
+                                    selected
+                                    {% endif %}>
+
+                                    Tamil
+
+                                </option>
+
+                                <option
+                                    value="Hindi"
+                                    {% if item.language == "Hindi" %}
+                                    selected
+                                    {% endif %}>
+
+                                    Hindi
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- CATEGORY -->
+
+                        <div class="form-group">
+
+                            <label for="category">
+
+                                Category
+                                <span class="required">*</span>
+
+                            </label>
+
+                            <select
+                                id="category"
+                                name="category"
+                                required>
+
+                                <option
+                                    value="General"
+                                    {% if item.category == "General" %}
+                                    selected
+                                    {% endif %}>
+
+                                    General
+
+                                </option>
+
+                                <option
+                                    value="Types"
+                                    {% if item.category == "Types" %}
+                                    selected
+                                    {% endif %}>
+
+                                    Types
+
+                                </option>
+
+                                <option
+                                    value="Membership"
+                                    {% if item.category == "Membership" %}
+                                    selected
+                                    {% endif %}>
+
+                                    Membership
+
+                                </option>
+
+                                <option
+                                    value="By-Laws"
+                                    {% if item.category == "By-Laws" %}
+                                    selected
+                                    {% endif %}>
+
+                                    By-Laws
+
+                                </option>
+
+                                <option
+                                    value="Governance"
+                                    {% if item.category == "Governance" %}
+                                    selected
+                                    {% endif %}>
+
+                                    Governance
+
+                                </option>
+
+                                <option
+                                    value="Meetings"
+                                    {% if item.category == "Meetings" %}
+                                    selected
+                                    {% endif %}>
+
+                                    Meetings
+
+                                </option>
+
+                                <option
+                                    value="Audit"
+                                    {% if item.category == "Audit" %}
+                                    selected
+                                    {% endif %}>
+
+                                    Audit
+
+                                </option>
+
+                                <option
+                                    value="Agriculture"
+                                    {% if item.category == "Agriculture" %}
+                                    selected
+                                    {% endif %}>
+
+                                    Agriculture
+
+                                </option>
+
+                                <option
+                                    value="Enquiry"
+                                    {% if item.category == "Enquiry" %}
+                                    selected
+                                    {% endif %}>
+
+                                    Enquiry
+
+                                </option>
+
+                                <option
+                                    value="Principles"
+                                    {% if item.category == "Principles" %}
+                                    selected
+                                    {% endif %}>
+
+                                    Principles
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         BUTTONS
+                    ================================================== -->
+
+                    <div class="button-row">
+
+                        <button
+                            type="submit"
+                            class="save-btn">
+
+                            💾 Save Changes
+
+                        </button>
+
+
+                        <a
+                            href="{{ url_for('admin_knowledge') }}"
+                            class="cancel-btn">
+
+                            Cancel
+
+                        </a>
+
+                    </div>
+
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

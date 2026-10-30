@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Enquiries - Admin Panel</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
+            color: #222;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        .navbar {
+            height: 65px;
+            background: #1f4e79;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .logo {
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            text-decoration: none;
+            color: white;
+            background: #dc3545;
+            padding: 9px 15px;
+            border-radius: 6px;
+        }
+
+        .logout-btn:hover {
+            background: #bb2d3b;
+        }
+
+
+        /* ================= LAYOUT ================= */
+
+        .layout {
+            display: flex;
+            min-height: calc(100vh - 65px);
+        }
+
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            width: 240px;
+            background: #173b5c;
+            padding: 25px 15px;
+        }
+
+        .sidebar h3 {
+            color: white;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .sidebar a {
+            display: block;
+            text-decoration: none;
+            color: white;
+            padding: 13px 15px;
+            margin-bottom: 8px;
+            border-radius: 7px;
+        }
+
+        .sidebar a:hover {
+            background: #275f8e;
+        }
+
+        .sidebar a.active {
+            background: #2f7db5;
+        }
+
+
+        /* ================= MAIN ================= */
+
+        .main {
+            flex: 1;
+            padding: 30px;
+            overflow-x: auto;
+        }
+
+
+        /* ================= HEADER ================= */
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            color: #1f4e79;
+            font-size: 28px;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: white;
+            background: #1f4e79;
+            padding: 10px 17px;
+            border-radius: 6px;
+        }
+
+        .back-btn:hover {
+            background: #163a5a;
+        }
+
+
+        /* ================= FILTER ================= */
+
+        .filter-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .filter-form input,
+        .filter-form select {
+            padding: 11px 13px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-form input {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .filter-btn {
+            border: none;
+            background: #1f4e79;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .filter-btn:hover {
+            background: #163a5a;
+        }
+
+        .clear-btn {
+            text-decoration: none;
+            background: #777;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 6px;
+        }
+
+        .clear-btn:hover {
+            background: #555;
+        }
+
+
+        /* ================= TABLE ================= */
+
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            overflow-x: auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 950px;
+        }
+
+        thead {
+            background: #1f4e79;
+            color: white;
+        }
+
+        th,
+        td {
+            padding: 14px 12px;
+            text-align: left;
+            vertical-align: top;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        th {
+            white-space: nowrap;
+            font-size: 14px;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f8fbff;
+        }
+
+
+        /* ================= CONTENT ================= */
+
+        .name-text {
+            font-weight: bold;
+        }
+
+        .question-text {
+            max-width: 320px;
+            line-height: 1.5;
+        }
+
+        .date-text {
+            white-space: nowrap;
+            color: #555;
+        }
+
+        .language-badge {
+            display: inline-block;
+            padding: 5px 9px;
+            background: #e7f1ff;
+            color: #1f4e79;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+
+        /* ================= STATUS ================= */
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.answered {
+            background: #d4edda;
+            color: #155724;
+        }
+
+
+        /* ================= ANSWER ================= */
+
+        .existing-answer {
+            background: #f1f8f3;
+            border-left: 4px solid #198754;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            line-height: 1.5;
+        }
+
+        .answer-box {
+            width: 100%;
+            min-width: 250px;
+            min-height: 90px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            resize: vertical;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .answer-btn {
+            border: none;
+            background: #198754;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .answer-btn:hover {
+            background: #157347;
+        }
+
+
+        /* ================= DELETE ================= */
+
+        .delete-btn {
+            border: none;
+            background: #dc3545;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 7px;
+        }
+
+        .delete-btn:hover {
+            background: #bb2d3b;
+        }
+
+
+        /* ================= NO DATA ================= */
+
+        .no-data {
+            text-align: center;
+            padding: 50px 20px;
+            color: #777;
+            font-size: 16px;
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                width: 190px;
+            }
+
+            .main {
+                padding: 18px;
+            }
+
+            .navbar {
+                padding: 0 15px;
+            }
+
+            .logo {
+                font-size: 17px;
+            }
+
+            .admin-info span {
+                display: none;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+
+
+        @media (max-width: 600px) {
+
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .sidebar a {
+                display: inline-block;
+                margin-right: 5px;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <div class="navbar">
+
+        <div class="logo">
+            Cooperative Chatbot - Admin
+        </div>
+
+        <div class="admin-info">
+
+            <span>
+                Welcome, {{ admin_username }}
+            </span>
+
+            <a
+                href="{{ url_for('admin_logout') }}"
+                class="logout-btn"
+            >
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= LAYOUT ================= -->
+
+    <div class="layout">
+
+
+        <!-- ================= SIDEBAR ================= -->
+
+        <aside class="sidebar">
+
+            <h3>Admin Panel</h3>
+
+            <a href="{{ url_for('admin_dashboard') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('admin_knowledge') }}">
+                Knowledge Base
+            </a>
+
+            <a
+                href="{{ url_for('admin_enquiries') }}"
+                class="active"
+            >
+                Enquiries
+            </a>
+
+            <a
+                href="{{ url_for('index') }}"
+                target="_blank"
+            >
+                Open Chatbot
+            </a>
+
+        </aside>
+
+
+        <!-- ================= MAIN ================= -->
+
+        <main class="main">
+
+
+            <!-- HEADER -->
+
+            <div class="page-header">
+
+                <h1>
+                    User Enquiries
+                </h1>
+
+                <a
+                    href="{{ url_for('admin_dashboard') }}"
+                    class="back-btn"
+                >
+                    ← Dashboard
+                </a>
+
+            </div>
+
+
+            <!-- ================= FILTER ================= -->
+
+            <div class="filter-box">
+
+                <form
+                    method="GET"
+                    action="{{ url_for('admin_enquiries') }}"
+                    class="filter-form"
+                >
+
+                    <input
+                        type="text"
+                        name="search"
+                        placeholder="Search by name or question..."
+                        value="{{ search or '' }}"
+                    >
+
+
+                    <select name="status">
+
+                        <option value="">
+                            All Status
+                        </option>
+
+
+                        <option
+                            value="Pending"
+                            {% if selected_status == 'Pending' %}
+                                selected
+                            {% endif %}
+                        >
+                            Pending
+                        </option>
+
+
+                        <option
+                            value="Answered"
+                            {% if selected_status == 'Answered' %}
+                                selected
+                            {% endif %}
+                        >
+                            Answered
+                        </option>
+
+                    </select>
+
+
+                    <button
+                        type="submit"
+                        class="filter-btn"
+                    >
+                        Search
+                    </button>
+
+
+                    <a
+                        href="{{ url_for('admin_enquiries') }}"
+                        class="clear-btn"
+                    >
+                        Clear
+                    </a>
+
+                </form>
+
+            </div>
+
+
+            <!-- ================= ENQUIRIES ================= -->
+
+            <div class="table-container">
+
+                {% if enquiries %}
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                ID
+                            </th>
+
+                            <th>
+                                Name
+                            </th>
+
+                            <th>
+                                Question
+                            </th>
+
+                            <th>
+                                Language
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Answer / Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for enquiry in enquiries %}
+
+                        <tr>
+
+                            <!-- ID -->
+
+                            <td>
+                                #{{ enquiry.id }}
+                            </td>
+
+
+                            <!-- NAME -->
+
+                            <td>
+
+                                <div class="name-text">
+                                    {{ enquiry.name }}
+                                </div>
+
+                            </td>
+
+
+                            <!-- QUESTION -->
+
+                            <td>
+
+                                <div class="question-text">
+                                    {{ enquiry.question }}
+                                </div>
+
+                            </td>
+
+
+                            <!-- LANGUAGE -->
+
+                            <td>
+
+                                <span class="language-badge">
+                                    {{ enquiry.language }}
+                                </span>
+
+                            </td>
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+                                {% if enquiry.status == 'Answered' %}
+
+                                    <span class="status answered">
+                                        Answered
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="status pending">
+                                        Pending
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- DATE -->
+
+                            <td>
+
+                                <div class="date-text">
+                                    {{ enquiry.date }}
+                                </div>
+
+                            </td>
+
+
+                            <!-- ANSWER -->
+
+                            <td>
+
+                                {% if enquiry.answer %}
+
+                                    <div class="existing-answer">
+
+                                        <strong>
+                                            Existing Answer:
+                                        </strong>
+
+                                        <br>
+
+                                        {{ enquiry.answer }}
+
+                                    </div>
+
+                                {% endif %}
+
+
+                                <textarea
+                                    class="answer-box"
+                                    data-enquiry-id="{{ enquiry.id }}"
+                                    placeholder="Enter or update answer..."
+                                >{{ enquiry.answer or '' }}</textarea>
+
+
+                                <br>
+
+
+                                <!--
+                                    IMPORTANT:
+                                    No Jinja code is used inside JavaScript.
+                                    ID is stored as a data attribute.
+                                -->
+
+                                <button
+                                    type="button"
+                                    class="answer-btn save-answer-btn"
+                                    data-enquiry-id="{{ enquiry.id }}"
+                                >
+                                    Save Answer
+                                </button>
+
+
+                                <br>
+
+
+                                <button
+                                    type="button"
+                                    class="delete-btn delete-enquiry-btn"
+                                    data-enquiry-id="{{ enquiry.id }}"
+                                >
+                                    Delete
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+
+                {% else %}
+
+                    <div class="no-data">
+
+                        No enquiries found.
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        /*
+         * SAVE ANSWER
+         */
+
+        async function saveAnswer(id) {
+
+            const answerBox =
+                document.querySelector(
+                    '.answer-box[data-enquiry-id="' + id + '"]'
+                );
+
+
+            if (!answerBox) {
+
+                alert("Answer box not found.");
+
+                return;
+            }
+
+
+            const answer =
+                answerBox.value.trim();
+
+
+            if (answer === "") {
+
+                alert("Please enter an answer.");
+
+                answerBox.focus();
+
+                return;
+            }
+
+
+            try {
+
+                const response = await fetch(
+                    "/admin/enquiry/" + id + "/answer",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            answer: answer
+                        })
+                    }
+                );
+
+
+                const data =
+                    await response.json();
+
+
+                if (data.success) {
+
+                    alert(
+                        "Answer saved successfully!"
+                    );
+
+                    window.location.reload();
+
+                } else {
+
+                    alert(
+                        data.error ||
+                        "Failed to save answer."
+                    );
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Save answer error:",
+                    error
+                );
+
+                alert(
+                    "Server error. Please make sure Flask is running."
+                );
+            }
+
+        }
+
+
+
+        /*
+         * DELETE ENQUIRY
+         */
+
+        async function deleteEnquiry(id) {
+
+            const confirmed =
+                window.confirm(
+                    "Are you sure you want to delete this enquiry?"
+                );
+
+
+            if (!confirmed) {
+
+                return;
+            }
+
+
+            try {
+
+                const response = await fetch(
+                    "/admin/enquiry/" + id + "/delete",
+                    {
+                        method: "POST"
+                    }
+                );
+
+
+                const data =
+                    await response.json();
+
+
+                if (data.success) {
+
+                    alert(
+                        "Enquiry deleted successfully!"
+                    );
+
+                    window.location.reload();
+
+                } else {
+
+                    alert(
+                        data.error ||
+                        "Failed to delete enquiry."
+                    );
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Delete error:",
+                    error
+                );
+
+                alert(
+                    "Server error. Please make sure Flask is running."
+                );
+            }
+
+        }
+
+
+
+        /*
+         * BUTTON EVENT HANDLERS
+         *
+         * Jinja is NOT used inside JavaScript.
+         */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+
+                const saveButtons =
+                    document.querySelectorAll(
+                        ".save-answer-btn"
+                    );
+
+
+                saveButtons.forEach(
+                    function (button) {
+
+                        button.addEventListener(
+                            "click",
+                            function () {
+
+                                const id =
+                                    this.dataset.enquiryId;
+
+                                saveAnswer(id);
+                            }
+                        );
+
+                    }
+                );
+
+
+
+                const deleteButtons =
+                    document.querySelectorAll(
+                        ".delete-enquiry-btn"
+                    );
+
+
+                deleteButtons.forEach(
+                    function (button) {
+
+                        button.addEventListener(
+                            "click",
+                            function () {
+
+                                const id =
+                                    this.dataset.enquiryId;
+
+                                deleteEnquiry(id);
+                            }
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
